@@ -9,11 +9,13 @@ import json
 
 class RegexApiView(APIView):
     def post(self, request):
-        result = re.match(request.data['expression'], request.data['text'])
-        if result:
+        ex = re.compile(request.data['expression'],
+                        re.M & re.L & re.I & re.S & re.X)
+        result = ex.match(request.data['text'])
+        if bool(result):
             return Response({"status": "Query String Is Valid", "result": str(result.group())})
         else:
-            return Response({"status": "Query String Is Invalid", "result": "No Result"})
+            return Response({"status": "Query String Is Invalid", "result": str(result)})
 
     def get(self, request):
         allRegex = Regex.objects.all()
